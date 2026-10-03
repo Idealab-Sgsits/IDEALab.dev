@@ -1,1 +1,11 @@
 .DS_Store
+# Agent / teamwork artifacts
+.agents/
+
+# Test infrastructure / readiness artifacts
+TEST_INFRA.md
+TEST_READY.md
+
+# Python
+__pycache__/
+*.py[cod]

@@ -1,6 +1,6 @@
 **Section 5: Terminal Sleuth**.
 
-### 15 Easy Problems (150 Coins)
+### 25 Easy Problems (150 Coins)
 
 *Focus: Training wheels. The hints literally tell them what to type. They just need to execute it and observe the right pane.*
 
@@ -79,7 +79,57 @@
 **Hint:** Scan the text block for "Creation Date" or "Registered On".
 **Implementation:** Right pane shows raw WHOIS text format.
 
-### 10 Medium Problems (400 Coins)
+**Name:** Forensics: Hidden History
+**PS:** Directive: An operator executed a critical command and cleared their terminal, but bash records prior keystrokes in a hidden dotfile. Inspect the bash history file to recover the authorization flag.
+**Hint:** Inspect the hidden bash history file using `cat ~/.bash_history` or `cat .bash_history`.
+**Implementation:** Simulated bash terminal with virtual home directory. User executes `cat .bash_history` to inspect the hidden command log and reveal the authorization token.
+
+**Name:** Network: HTTP Header Snooping
+**PS:** Directive: A staging web service on `http://127.0.0.1:8080/health` returns custom telemetry headers. Use curl to inspect the response headers and find the value of `X-Service-Flag`.
+**Hint:** Use the `-I` or `-i` flag with curl to dump response headers: `curl -I http://127.0.0.1:8080/health`.
+**Implementation:** Network interrogation challenge. User runs `curl -I` against the local endpoint to inspect HTTP response headers and extract the secret header field.
+
+**Name:** Forensics: Secret in the Subdir
+**PS:** Directive: A nested configuration directory exists under `/var/configs`. Find all files ending in `.conf` recursively and locate the token stored in the `auth.conf` file.
+**Hint:** Use `find /var/configs -name "*.conf"` to locate the configuration files, then `cat` the file.
+**Implementation:** Bash file enumeration. User executes recursive directory search with `find` to pinpoint nested config files and read the target credential.
+
+**Name:** Forensics: Pattern Harvester
+**PS:** Directive: The file `system_events.log` contains thousands of lines. Search for lines containing the keyword 'FLAG:' to extract the security token.
+**Hint:** Use `grep "FLAG:" system_events.log` to isolate the line containing the token.
+**Implementation:** Log parsing via grep. User isolates relevant log event lines using keyword pattern matching to recover the flag token.
+
+**Name:** Forensics: Modified in the Shadows
+**PS:** Directive: An adversary altered a file in `/opt/data` today. List the files sorted by modification time to identify the most recently updated file.
+**Hint:** Use `ls -lt` to sort directory contents by modification time descending.
+**Implementation:** Filesystem timestamp forensics. User sorts files by mtime with `ls -lt` to identify which file was tampered with most recently.
+
+**Name:** Forensics: Hidden Under the Dot
+**PS:** Directive: A covert operative hid a file whose name begins with a dot in `/tmp/staging`. Discover the hidden filename and view its content.
+**Hint:** List hidden files with `ls -la /tmp/staging`, then read the dotfile with `cat`.
+**Implementation:** Hidden dotfile discovery. Running `ls -la` displays concealed dotfiles, allowing the user to view the hidden payload with `cat`.
+
+**Name:** Network: Hostname Resolution
+**PS:** Directive: Inspect `/etc/hosts` to find the static IP address mapped to the internal host `telemetry.internal.corp`.
+**Hint:** Print the contents of the hosts resolution file with `cat /etc/hosts`.
+**Implementation:** Local DNS configuration inspection. User reads `/etc/hosts` to uncover static domain overrides and recover the mapping token.
+
+**Name:** Forensics: Counting Lines
+**PS:** Directive: The audit file `audit.csv` lists detected security alerts. Count how many total lines are in `audit.csv`.
+**Hint:** Use `wc -l audit.csv` to count the lines in the file.
+**Implementation:** Terminal line counting utility. User executes `wc -l audit.csv` to tally record rows and inspect the summary security marker.
+
+**Name:** Forensics: Environment Variable Peek
+**PS:** Directive: The container runtime passed an operational secret in an environment variable named `MISSION_TOKEN`. Print its value.
+**Hint:** Print an environment variable using `echo $MISSION_TOKEN` or `env | grep MISSION_TOKEN`.
+**Implementation:** Process environment inspection. User retrieves session variables via `echo $MISSION_TOKEN` to read the passed runtime token.
+
+**Name:** Forensics: File Size Triage
+**PS:** Directive: Several dump files were created in `/var/dumps`. Locate the only dump file that is not 0 bytes and read the string within.
+**Hint:** Use `find /var/dumps -size +0c` or `ls -lh /var/dumps` to spot the non-empty file.
+**Implementation:** Filesystem triage filtering. User identifies non-empty files amidst zero-byte dummy files using size flags in `find` or `ls -l`.
+
+### 20 Medium Problems (400 Coins)
 
 *Focus: Stepping off the training wheels. They have to combine logic or modify commands slightly.*
 
@@ -133,7 +183,57 @@
 **Hint:** You cannot use `=` for NULL in SQL. You must use `WHERE timestamp IS NULL`.
 **Implementation:** Teaches NULL handling in databases.
 
-### 5 Hard Problems (750 Coins)
+**Name:** Forensics: SUID Binary Hunt
+**PS:** Directive: An attacker planted an executable binary with SUID bit (permissions 4755) in `/usr/local/bin`. Find the name of the SUID binary.
+**Hint:** Use `find /usr/local/bin -perm -4000` to enumerate binaries with the SUID bit set.
+**Implementation:** Linux privilege escalation reconnaissance. User scans directory binaries for SUID permission bit `-4000` to uncover the rogue escalation binary.
+
+**Name:** Forensics: Access Log 404 Hunter
+**PS:** Directive: Analyze `access.log` to find the URI path that returned HTTP status code 404 during an automated scanning probe.
+**Hint:** Filter lines containing ' 404 ' using grep or awk: `grep " 404 " access.log`.
+**Implementation:** Web access log analysis. Filtering Nginx access log lines by status 404 reveals the reconnaissance probe path and embedded flag.
+
+**Name:** Forensics: Scheduled Cron Job
+**PS:** Directive: Examine system scheduled tasks in `/etc/crontab` and `/etc/cron.d/` to find the script executed every 5 minutes by the root user.
+**Hint:** View `/etc/crontab` and check the cron expression `*/5 * * * *`.
+**Implementation:** Persistence analysis via cron. Reading `/etc/crontab` and parsing cron timing expressions reveals scheduled root maintenance scripts.
+
+**Name:** Query: Schema Table Discovery
+**PS:** Directive: Query `sqlite_master` in the database to discover the name of the hidden audit table that begins with `shadow_`.
+**Hint:** Execute `SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'shadow_%';`.
+**Implementation:** Database schema reconnaissance. Querying the internal `sqlite_master` metadata table exposes covert table names and hidden data schemas.
+
+**Name:** Forensics: Grep Regex IP Extraction
+**PS:** Directive: A rogue server transmitted connection attempts logged in `firewall.log`. Use extended grep with regex to extract IPv4 addresses matching subnet `10.50.X.X`.
+**Hint:** Use `grep -E "10\.50\.[0-9]+\.[0-9]+" firewall.log` or `grep "10.50." firewall.log`.
+**Implementation:** Regular expression pattern matching on network firewall logs. User filters traffic entries by CIDR subnet pattern to identify allowed connections.
+
+**Name:** Forensics: World-Writable Audit
+**PS:** Directive: Audit permissions in `/opt/services` to find the world-writable file (permission mode 777 or o+w) that represents a privilege escalation hazard.
+**Hint:** Use `find /opt/services -perm -0002` or `ls -l` and look for `rwxrwxrwx`.
+**Implementation:** File permission auditing. Scanning `/opt/services` for files with world-writable permission bits isolates vulnerable misconfigured scripts.
+
+**Name:** Network: Listening Socket Audit
+**PS:** Directive: Inspect the system socket status output from `ss -tulpn` or `netstat -tlpn` to find the unauthenticated service listening on port 9090.
+**Hint:** Search for `:9090` in the socket listing output to identify the program name.
+**Implementation:** Network socket reconnaissance. Examining simulated `ss` or socket summary tables reveals unauthorized daemons listening on high non-standard ports.
+
+**Name:** Query: SQL Injection Probe
+**PS:** Directive: In the `audit_trail` table, multiple suspicious SQL injection payloads were logged. Query the payload that successfully extracted admin credentials.
+**Hint:** Use `SELECT * FROM audit_trail WHERE payload LIKE '%UNION%' OR status = 'EXPLOITED';`.
+**Implementation:** SQL audit log interrogation. Querying the audit trail for exploited union-based injection signatures pinpoints successful breach attempts.
+
+**Name:** Forensics: SSH Authorized Keys Audit
+**PS:** Directive: Investigate `/home/deploy/.ssh/authorized_keys` to identify the rogue public key comment appended by an unauthorized actor.
+**Hint:** Read the authorized_keys file: `cat /home/deploy/.ssh/authorized_keys` and examine the trailing comment.
+**Implementation:** SSH backdoors forensic analysis. Reading authorized key configurations flags unrecognized key headers and rogue administrative comments.
+
+**Name:** Forensics: Defective Systemd Unit
+**PS:** Directive: A persistent service was installed in `/etc/systemd/system/malware.service`. Inspect the `ExecStart` directive to discover what binary is executed.
+**Hint:** Print the unit file with `cat /etc/systemd/system/malware.service` and read `ExecStart=`.
+**Implementation:** Systemd persistence investigation. Parsing custom service unit files reveals execution arguments and payload tokens configured under `ExecStart`.
+
+### 15 Hard Problems (750 Coins)
 
 *Focus: Chaining commands together and reading raw data structures without hand-holding.*
 
@@ -161,3 +261,53 @@
 **PS:** Directive: The file `encoded_flag.txt` contains a Base64 string. Decode it directly in the terminal to reveal the plaintext flag.
 **Hint:** Pipe the `cat` command into the base64 decoding tool: `cat encoded_flag.txt | base64 -d`.
 **Implementation:** Teaches terminal-based decryption chaining.
+
+**Name:** Forensics: Pipeline Awk Aggregator
+**PS:** Directive: A high-volume access log `web_traffic.csv` records IP addresses in column 1 and bytes in column 4. Write an awk command to sum total bytes for IP `192.168.1.50`.
+**Hint:** Chain awk with pattern match and accumulator: `awk -F',' '$1=="192.168.1.50"{sum+=$4} END{print sum}' web_traffic.csv`.
+**Implementation:** Awk stream processing and field arithmetic. User filters CSV records by source IP and aggregates numeric byte counters in the END block.
+
+**Name:** Network: DNS Tunneling Exfiltration
+**PS:** Directive: An adversary exfiltrated base64 data chunks encoded in DNS query subdomains in `dns_queries.log`. Concatenate the subdomains for domain `corp-exfil.xyz` and decode them.
+**Hint:** Extract subdomain prefixes using `awk` or `cut`, strip `.corp-exfil.xyz`, concatenate, and pipe through `base64 -d`.
+**Implementation:** Covert channel analysis. Extracting ordered subdomain labels from DNS request logs, stripping domain suffixes, and base64-decoding recovers the exfiltrated flag.
+
+**Name:** Forensics: Memory String Carving
+**PS:** Directive: Carve ASCII strings from a raw physical memory dump `memdump.raw` looking for decrypted cryptographic master keys prefixed with `MASTER_KEY:`.
+**Hint:** Extract printable strings using `strings memdump.raw | grep "MASTER_KEY:"`.
+**Implementation:** Memory artifact carving. Executing `strings` against binary memory dump snapshots extracts volatile secrets and master encryption keys.
+
+**Name:** Network: PCAP TLS Handshake SNI
+**PS:** Directive: Analyze the captured TLS Client Hello packets in `traffic_capture.pcap.txt` to find the Server Name Indication (SNI) hostname used by the covert command-and-control server.
+**Hint:** Search packet dissections for `Server Name:` or `Handshake: Client Hello` with `grep -A 2 "Server Name"`.
+**Implementation:** Encrypted traffic reconnaissance. Parsing unencrypted TLS handshake extensions in PCAP dissections reveals the destination SNI domain and C2 indicators.
+
+**Name:** Forensics: Chained Sed and Xargs
+**PS:** Directive: A list of candidate artifact file paths is stored in `file_manifest.txt`. Strip leading whitespace with sed, and pass existing paths via xargs to grep for `FLAG_SIG`.
+**Hint:** Use `sed 's/^[ 	]*//' file_manifest.txt | xargs grep "FLAG_SIG"`.
+**Implementation:** Command pipeline chaining. Sanitizing manifest path strings with `sed` and feeding arguments via `xargs` into `grep` performs batch triage.
+
+**Name:** Network: Topology Reconstruction
+**PS:** Directive: A multi-hop routing table `routing_table.txt` defines network gateways. Trace the next-hop router gateway IP for destination subnet `172.28.0.0/16`.
+**Hint:** Search routing table for destination `172.28.0.0` and identify the Gateway column.
+**Implementation:** IP routing table inspection. Analyzing kernel network routes maps gateway next-hops for isolated subnets and determines network egress routes.
+
+**Name:** Forensics: Multi-Stage Hex Carving
+**PS:** Directive: An obfuscated shell payload in `corrupt_firmware.bin` contains an embedded tar archive offset starting at magic bytes `75 73 74 61 72` (ustar). Extract the header token.
+**Hint:** Use `xxd` or `hexdump -C corrupt_firmware.bin | grep -C 2 "ustar"` to locate the offset and token.
+**Implementation:** Hexadecimal signature carving. Using `hexdump -C` to locate the magic bytes `ustar` in damaged firmware blobs carves out embedded archive tokens.
+
+**Name:** Forensics: Inode Link Investigation
+**PS:** Directive: An operative hardlinked a sensitive file to disguise it. Find all file paths sharing inode number `849201` in directory `/var/vault`.
+**Hint:** Use `find /var/vault -inum 849201` to find all directory entries linking to the same inode.
+**Implementation:** Filesystem inode analysis. Using `find -inum` traces hardlinked directory entries pointing to identical filesystem inodes regardless of file naming.
+
+**Name:** Network: TCP Session Stream Assembly
+**PS:** Directive: A fragmented Telnet session was captured in `telnet_stream.dump`. Assemble the sequence of retransmitted characters to reconstruct the administrator authentication command.
+**Hint:** Sort the stream packets by sequence number: `sort -k2,2n telnet_stream.dump | awk '{print $4}' | tr -d '\n'`.
+**Implementation:** TCP stream reassembly. Reordering out-of-order sequence frames via `sort` and concatenating stream payloads reassembles the cleartext Telnet session.
+
+**Name:** Forensics: Multi-Stage Forensic Vault
+**PS:** Directive: A multi-layered artifact `vault_stage1.txt` contains a base64 encoded string, which decodes to a reverse-rot13 command. Execute the pipeline to unlock the master flag.
+**Hint:** Decode base64 first (`base64 -d vault_stage1.txt`), then pipe through rot13 with `tr 'A-Za-z' 'N-ZA-Mn-za-m'`.
+**Implementation:** Multi-stage decoding pipeline. Chaining `base64 -d` with `tr` character substitution unmasks multiple layers of obfuscation to uncover the flag.

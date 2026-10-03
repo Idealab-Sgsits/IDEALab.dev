@@ -1,6 +1,6 @@
 **Section 3: Core Compute**.
 
-### 15 Easy Problems (150 Coins, 5–10 Mins)
+### 25 Easy Problems (150 Coins, 5–10 Mins)
 
 *Focus: Classic 101 programming bugs—infinite loops, off-by-one errors, and syntax slip-ups.*
 
@@ -79,7 +79,57 @@
 **Hint:** To check for an even number, you don't divide by 0. You look for the remainder when divided by 2.
 **Implementation:** Preload `if (num % 0 == 0)`. They must change it to `num % 2 == 0`.
 
-### 10 Medium Problems (400 Coins, 10–20 Mins)
+
+**Name:** The Type Mismatch
+**PS:** The cluster orchestrator crashed with a TypeError while registering a server node. Convert the numeric node ID so it can combine with the text label.
+**Hint:** In Python, you cannot directly add a string and an integer. Convert the integer using str() or use an f-string.
+**Implementation:** Preload a script attempting `item + node_id`. The student wraps `node_id` with `str()` to produce 'Server Node #42' and trigger the flag.
+
+**Name:** Mutable Default Menace
+**PS:** The background worker's task queue is leaking jobs across separate batches because of Python's mutable default argument behavior.
+**Hint:** Default parameter lists in Python are instantiated only once when the function is defined. Use queue=None and initialize queue = [] inside the function body.
+**Implementation:** Preload `def add_task(task, queue=[])`. The student updates the parameter to `queue=None` and initializes an empty list inside the function.
+
+**Name:** Tuple Immutability Shock
+**PS:** The autopilot altitude updater failed because waypoints were defined as immutable tuples. Fix the update logic so coordinates update to (10, 20, 50).
+**Hint:** Tuples cannot be modified after creation. Either convert coords to a list before updating, or construct a new tuple with the updated value.
+**Implementation:** Preload code attempting item assignment on a tuple `coords[2] = 50`. The student creates a new tuple or converts to a list, resulting in `(10, 20, 50)`.
+
+**Name:** Dictionary Key Despair
+**PS:** The credential gateway throws an unhandled KeyError when a user profile omits the optional clearance level. Retrieve the level safely with a fallback default of 1.
+**Hint:** Direct key indexing throws a KeyError when the key does not exist. Use the dictionary's .get(key, default_value) method.
+**Implementation:** Preload direct index lookup on missing key `user_profile['clearance_level']`. The student replaces it with `.get('clearance_level', 1)` to handle missing keys.
+
+**Name:** The Shadowed Sum
+**PS:** The scoring engine crashes with 'TypeError: int object is not callable' because a local variable overwrote Python's built-in sum function.
+**Hint:** Avoid naming variables after built-in Python functions like sum. Rename the initial variable so the built-in sum() function works again.
+**Implementation:** Preload a script where `sum = 100` shadows the built-in `sum()` function. The student renames the variable to restore the built-in and evaluate `total == 160`.
+
+**Name:** String Strip Slip
+**PS:** The authentication filter sent dirty tokens with whitespace to the backend API because the string strip method wasn't saved back to the variable.
+**Hint:** In Python, string methods do not modify strings in-place. You must assign the returned result back to the variable: raw_token = raw_token.strip().
+**Implementation:** Preload `raw_token.strip()` without assignment. The student reassigns `raw_token = raw_token.strip()` to strip surrounding whitespace.
+
+**Name:** List Multiplication Trap
+**PS:** Modifying cell (0, 0) of the sensor matrix accidentally sets the first element of all three rows to 1 due to shallow list multiplication.
+**Hint:** Multiplying a list containing a list replicates references to the exact same list. Use a list comprehension [[0] * 3 for _ in range(3)] to create independent rows.
+**Implementation:** Preload `grid = [[0] * 3] * 3`. The student replaces it with a list comprehension `[[0] * 3 for _ in range(3)]` to create unique row instances.
+
+**Name:** Negative Slicing Surrender
+**PS:** The crash telemetry reporter is always missing the critical final event because an explicit -1 stop index excludes the last element in slice notation.
+**Hint:** The upper bound in Python slices is non-inclusive. To slice all the way to the end of a list using negative indexing, omit the stop parameter entirely: logs[-3:].
+**Implementation:** Preload `logs[-3:-1]`. The student changes the slice to `logs[-3:]` to include the final element 'ready'.
+
+**Name:** The Premature Generator
+**PS:** The thruster controller halted before ignition because the countdown sequence dropped the final T-0 countdown tick.
+**Hint:** Python range() stops one step before the stop value. To include 0 when stepping by -1, set the stop boundary to -1.
+**Implementation:** Preload `range(5, 0, -1)`. The student adjusts the range to `range(5, -1, -1)` to include 0 in the sequence.
+
+**Name:** Floating Point Precision Trap
+**PS:** A micro-payment transaction validator rejected a legitimate 0.3 credit balance because direct float equality comparison failed on IEEE 754 precision artifacts.
+**Hint:** Binary floating point numbers cannot represent 0.1 or 0.2 exactly. Use round(total_credit, 2) == 0.3 or abs(total_credit - 0.3) < 1e-9 for floating point comparisons.
+**Implementation:** Preload `total_credit == 0.3`. The student uses `round(total_credit, 2) == 0.3` or an epsilon comparison to evaluate `is_valid` as True.
+### 20 Medium Problems (400 Coins, 10–20 Mins)
 
 *Focus: Classic algorithmic logic, nested loops, and data structure slip-ups.*
 
@@ -133,7 +183,57 @@
 **Hint:** In binary, every odd number ends in a 1, and every even number ends in a 0. If you do `number & 1`, what should the result be for an even number?
 **Implementation:** Preload `if ((num & 1) == 1)`. They must change it to `== 0`.
 
-### 5 Hard Problems (750 Coins, 20–30 Mins)
+
+**Name:** Binary Search First Occurrence
+**PS:** The audit log indexer needs to find the earliest timestamp entry for duplicate events, but the binary search returns an arbitrary middle match instead of the first occurrence.
+**Hint:** When arr[mid] == target, store mid as a candidate answer and continue searching the left half by setting right = mid - 1.
+**Implementation:** Preload a binary search returning on first hit. The student stores `result = mid` and continues narrowing the left partition `right = mid - 1`.
+
+**Name:** Stack Invariant Violation
+**PS:** The code syntax validator accepts unclosed opening brackets like '(()' as valid expressions because it forgets to check if the bracket stack is empty upon completion.
+**Hint:** Even if no unmatched closing brackets appear, open brackets might remain in the stack. Check that len(stack) == 0 at the end.
+**Implementation:** Preload a parenthesis matching function ending in `return True`. The student updates the termination condition to `return len(stack) == 0`.
+
+**Name:** Queue FIFO Flip
+**PS:** A real-time telemetry pipe reversed packet delivery order because its internal queue implementation called pop() from the tail instead of the head.
+**Hint:** In a First-In-First-Out queue, the item removed must be the oldest item added. Calling pop() removes from the end; use pop(0) to remove from the front.
+**Implementation:** Preload a Queue class with `self.items.pop()`. The student modifies it to `self.items.pop(0)` to preserve first-in-first-out semantics.
+
+**Name:** Recursive Power Overflow
+**PS:** The cryptography key generator crashed with RecursionError when an exponent of 0 was provided because the base case assumed n is always at least 1.
+**Hint:** Any number raised to the power of 0 equals 1. Add if n == 0: return 1 as the primary base case.
+**Implementation:** Preload a recursive function with base case `if n == 1: return x`. The student replaces it with `if n == 0: return 1` to handle zero exponentiation.
+
+**Name:** Two Pointers Container Collapse
+**PS:** The hydraulic capacity calculator produces sub-optimal water volume results because its two-pointer loop always advances the left wall instead of the shorter wall.
+**Hint:** In the two-pointer container problem, you must advance the pointer with the smaller height: if heights[left] < heights[right]: left += 1 else: right -= 1.
+**Implementation:** Preload container loop with unconditional `left += 1`. The student implements conditional pointer shifts based on the shorter vertical bar to find max area 100.
+
+**Name:** String Anagram Hash Collision
+**PS:** The text indexer fails with an unhashable type error when grouping anagrams because it attempts to use a mutable list as a dictionary key.
+**Hint:** Dictionary keys must be hashable and immutable. Convert the frequency count list into a tuple using tuple(counts) so it can serve as a valid map key.
+**Implementation:** Preload anagram grouper using `key = counts`. The student casts the list to `tuple(counts)` to provide an immutable dictionary key.
+
+**Name:** Cycle Detection Infinite Wander
+**PS:** Memory leak detector hangs in infinite traversal because the fast pointer in Floyd's cycle finding algorithm moves at the same speed as the slow pointer.
+**Hint:** In Floyd's Cycle Detection algorithm, the fast pointer must move twice as fast as the slow pointer: fast = fast.next.next.
+**Implementation:** Preload linked list cycle check with `fast = fast.next`. The student corrects it to `fast = fast.next.next` to establish Floyd's 2-speed invariant.
+
+**Name:** Interval Merge Gap
+**PS:** The calendar scheduling aggregator shrunk booking slots when a smaller meeting took place entirely within an existing larger reservation block.
+**Hint:** When an interval is swallowed by a previous larger interval, setting prev[1] = current[1] shrinks it. Use prev[1] = max(prev[1], current[1]).
+**Implementation:** Preload interval merger with `prev[1] = current[1]`. The student changes it to `prev[1] = max(prev[1], current[1])` to prevent boundary shrinkage.
+
+**Name:** Binary Search Tree Boundary Drift
+**PS:** The database index validator mistakenly marked an invalid binary search tree as healthy because it only checked immediate children rather than ancestral range boundaries.
+**Hint:** A valid BST requires every node in the right subtree to be greater than the root ancestor. Pass low and high limits to recursive calls: is_valid_bst(node.left, low, node.val).
+**Implementation:** Preload BST validator checking local children only. The student enforces `low < root.val < high` across recursive subtrees.
+
+**Name:** Rotated Sorted Array Pivot Drop
+**PS:** The ring buffer search routine missed items sitting directly on the right boundary of a rotated sorted array due to an overly strict inequality check.
+**Hint:** Check the boundary comparison in the right-half condition. If the target equals nums[right], a strict < excludes it; change it to <= nums[right].
+**Implementation:** Preload rotated binary search with `nums[mid] < target < nums[right]`. The student fixes `< nums[right]` to `<= nums[right]` to catch right-edge elements.
+### 15 Hard Problems (750 Coins, 20–30 Mins)
 
 *Focus: Sneaky pointer issues, off-by-one window boundaries, and dynamic logic.*
 
@@ -161,3 +261,53 @@
 **PS:** You can climb 1 or 2 steps at a time. The code uses Dynamic Programming to find how many ways to reach the top. But it crashes instantly if you ask it how to climb a staircase with exactly 1 step.
 **Hint:** The code initializes the base cases `dp[1] = 1;` and `dp[2] = 2;` right at the start. What happens if the array `dp` was only created with a size of 1? It throws an Out of Bounds error on `dp[2]`.
 **Implementation:** Preload the initialization. They must add a check at the very top: `if (n == 1) return 1;` before touching the `dp` array.
+
+**Name:** The LCS Dynamic Transition
+**PS:** The genomic sequence aligner reported an LCS length of 0 for matching strands because its DP transition used min() instead of max() on non-matching characters.
+**Hint:** In the Longest Common Subsequence DP table, when characters differ, you carry forward the longest subsequence found so far: use max(dp[i-1][j], dp[i][j-1]).
+**Implementation:** Preload LCS grid with `min(dp[i-1][j], dp[i][j-1])`. The student corrects the transition to `max()` to properly compute subsequence lengths.
+
+**Name:** Graph Traversal Cycle Trap
+**PS:** The network topology analyzer crashes with RecursionError when checking for redundant loop cycles because nodes are added to the visited set only after visiting neighbors.
+**Hint:** Mark the current node as visited immediately upon entering the DFS function (visited.add(node) at top). If you wait until after iterating neighbors, cycles recurse indefinitely.
+**Implementation:** Preload cycle detection DFS adding to visited after neighbor loops. The student shifts `visited.add(node)` to the top of `dfs()` to detect cyclic backlinks.
+
+**Name:** Sliding Window Pointer Regress
+**PS:** The stream deduplicator over-counted unique character sequence lengths on palindromic patterns like 'abba' because the sliding window left pointer drifted backwards.
+**Hint:** When encountering a previously seen character, the left pointer must never move backward. Use left = max(left, last_seen[char] + 1).
+**Implementation:** Preload sliding window with unconstrained `left = last_seen[char] + 1`. The student wraps it in `max(left, ...)` to ensure monotonic forward window movement.
+
+**Name:** Power of Four False Positive
+**PS:** The memory partitioner accepts block sizes that are powers of 2 (like 8 or 32) when allocating 4-way associative cache lines, instead of strictly powers of 4.
+**Hint:** Every power of 4 is a power of 2, but also satisfies (n - 1) % 3 == 0 (or n % 3 == 1). Add this modular check to eliminate false power-of-two positives like 8 and 32.
+**Implementation:** Preload `n > 0 and (n & (n - 1)) == 0`. The student adds `and n % 3 == 1` to strictly filter for powers of 4.
+
+**Name:** 0-1 Knapsack Direction Error
+**PS:** The payload cargo optimizer duplicated single-instance equipment items because the 1D DP table updated capacities from left to right instead of right to left.
+**Hint:** In 1D dynamic programming for 0-1 Knapsack, you must iterate capacity backwards (range(capacity, weight - 1, -1)) so you don't reuse the current item multiple times.
+**Implementation:** Preload 1D knapsack looping forward `range(weight, capacity + 1)`. The student reverses the loop `range(capacity, weight - 1, -1)` to prevent item duplication.
+
+**Name:** Dijkstra Priority Inversion
+**PS:** The routing protocol selected sub-optimal high-latency paths because its priority queue stored node names before edge weights, sorting by alphabetic name rather than shortest distance.
+**Hint:** Python's heapq sorts tuples by their first element. The distance must be the first element in the tuple: (dist, node) rather than (node, dist).
+**Implementation:** Preload Dijkstra algorithm storing `(node, dist)` in the priority queue. The student flips tuple ordering to `(dist, node)` so the min-heap sorts by distance.
+
+**Name:** Topological Sort Cycle Omission
+**PS:** The build dependency resolver attempted to compile packages in impossible cyclic dependency graphs because Kahn's topological sort failed to check if all tasks were processed.
+**Hint:** If a dependency graph contains a cycle, Kahn's algorithm cannot resolve all nodes. Verify len(order) == num_tasks; if not, return [].
+**Implementation:** Preload Kahn's algorithm returning partial orders on cyclic inputs. The student checks `len(order) == num_tasks` to return an empty array on cycles.
+
+**Name:** Monotonic Stack Temperature Index
+**PS:** The weather forecast span tracker threw IndexErrors because the monotonic stack pushed raw temperature values rather than day index positions.
+**Hint:** To calculate the distance between days (i - prev_idx), the monotonic stack must track list indices, not raw temperature values. Change stack.append(temp) to stack.append(i).
+**Implementation:** Preload monotonic stack with `stack.append(temp)`. The student alters it to `stack.append(i)` to enable correct index distance arithmetic.
+
+**Name:** Trie Prefix Over-Match
+**PS:** The dictionary lookup autocompleter returned full word matches for partial prefixes because the search method omitted the terminal node end-of-word boolean check.
+**Hint:** In a prefix tree, a path match is only a valid complete word if the terminal node's end-of-word flag is set. Change return True in search to return node.is_end.
+**Implementation:** Preload Trie class with `search` unconditionally returning `True`. The student updates it to `return node.is_end` to distinguish prefixes from full words.
+
+**Name:** Two Unique Numbers Bit Isolation
+**PS:** The signal demultiplexer failed to separate two distinct radio beacon IDs from a stream of paired echoes because its bitmask calculation cleared rather than isolated the discriminating bit.
+**Hint:** To isolate the lowest set bit in binary, use x & (-x) using two's complement. x & (x - 1) clears the lowest set bit rather than isolating it.
+**Implementation:** Preload bitmask algorithm with `diff_bit = xor_all & (xor_all - 1)`. The student corrects it to `xor_all & (-xor_all)` to isolate the distinguishing bit.
